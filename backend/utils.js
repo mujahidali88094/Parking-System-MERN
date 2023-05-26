@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 
-const verifyLoggedInAsAdmin = (req, res, next) => {
+const verifyLoggedIn = (req, res, next) => {
   // Verify and decode the JWT token from the Authorization header
   const token = req.header('Authorization');
 
@@ -11,33 +10,23 @@ const verifyLoggedInAsAdmin = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== 'admin') {
-      return res.status(401).json({ message: 'Not authorized as admin.' });
-    }
-    req.user = decoded.user;
+    req.user = decoded;
     next();
   } catch (err) {
     res.status(401).json({ message: 'Invalid token. Authorization denied.' });
   }
 };
-const verifyLoggedInAsUser = (req, res, next) => {
-  // Verify and decode the JWT token from the Authorization header
-  const token = req.header('Authorization');
-
-  if (!token) {
-    return res.status(401).json({ message: 'Missing token. Authorization denied.' });
+const verifyIsUser = (req, res, next) => {
+  if(!req.user || req.user.role !== 'user') {
+    return res.status(401).json({ message: 'User not authorized.' });
   }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== 'user') {
-      return res.status(401).json({ message: 'Not authorized as admin.' });
-    }
-    req.user = decoded.user;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'Invalid token. Authorization denied.' });
+  next();
+};
+const verifyIsAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(401).json({ message: 'Admin not authorized.' });
   }
+  next();
 };
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -63,4 +52,4 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 
-module.exports = { verifyLoggedInAsAdmin, verifyLoggedInAsUser,calculateDistance };
+module.exports = { verifyLoggedIn, verifyIsAdmin, verifyIsUser, calculateDistance };

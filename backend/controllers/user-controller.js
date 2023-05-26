@@ -12,6 +12,10 @@ const getAllUsers = async (req, res) => {
 };
 
 const signup = async (req, res) => {
+  if (!req.body.email || !req.body.password || !req.body.name) {
+    return res.status(400).json({ message: 'Missing required fields: email, password, name' });
+  }
+
   try {
     const user = new User(req.body);
 
@@ -29,6 +33,10 @@ const signup = async (req, res) => {
 }
 
 const login = async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ error: 'Missing required fields: email, password' });
+  }
+  
   try {
     const { email, password } = req.body;
     let payload = {};

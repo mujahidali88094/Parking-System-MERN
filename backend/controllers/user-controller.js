@@ -57,7 +57,8 @@ const login = async (req, res) => {
       const user = users[0].toJSON();
       delete user.password;
       payload = {
-        user: { ...user, role: 'user' }
+        ...user,
+        role: 'user'
       };
     }
     // Create and sign the JWT token

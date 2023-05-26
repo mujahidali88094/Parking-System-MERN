@@ -7,6 +7,7 @@ const parkingAreaSchema = new Schema({
   address: String,
   lat: Number,
   lng: Number,
+  capacity: Number,
 
 });
 

@@ -9,7 +9,7 @@ const request = async (config, jwt) => {
         const res = await axios.request({
             baseURL: BACKEND_URL,
             headers:{
-                "Authorization":`Bearer ${jwt}`
+                "Authorization":`${jwt}`
             },
             ...config
         })

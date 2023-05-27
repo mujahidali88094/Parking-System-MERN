@@ -1,2 +1,3 @@
 import Login from "./Login";
-export { Login };
+import ParkingAreas from "./ParkingAreas";
+export { Login, ParkingAreas };

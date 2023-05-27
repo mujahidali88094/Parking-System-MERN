@@ -2,8 +2,12 @@ import { useFormik } from "formik";
 import { TextField, Button } from "@mui/material";
 import { loginApi } from "../common/axiosClient";
 import { cacheWithExpiry } from "../common/helpers";
+import { useDispatch } from 'react-redux';
+import { displayNotification } from "../redux/notificationSlice";
 
 export default function Login() {
+  const dispatch = useDispatch();
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -12,10 +16,10 @@ export default function Login() {
     onSubmit: async (values) => {
       try {
         const response = await loginApi(values);
-        alert(response.message);
+        dispatch(displayNotification({ message: "Login successful", type: "success" }));
         cacheWithExpiry("jwt", response.token, 1000 * 60 * 60 * 1);
       } catch (err) {
-        alert(err);
+        dispatch(displayNotification({ message: String(err), type: "error" }));
       }
     },
   });

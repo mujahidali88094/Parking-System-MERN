@@ -20,7 +20,7 @@ function App() {
         open={notification.open}
         autoHideDuration={notification.autoHideDuration}
         onClose={() => { dispatch(hideNotification()) }}
-        anchorOrigin={{ vertical: "center", horizontal: "bottom" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           variant='filled'

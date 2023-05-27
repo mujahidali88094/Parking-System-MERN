@@ -4,9 +4,11 @@ import { loginApi } from "../common/axiosClient";
 import { cacheWithExpiry } from "../common/helpers";
 import { useDispatch } from 'react-redux';
 import { displayNotification } from "../redux/notificationSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -18,6 +20,7 @@ export default function Login() {
         const response = await loginApi(values);
         dispatch(displayNotification({ message: "Login successful", type: "success" }));
         cacheWithExpiry("jwt", response.token, 1000 * 60 * 60 * 1);
+        navigate("/parkingAreas");
       } catch (err) {
         dispatch(displayNotification({ message: String(err), type: "error" }));
       }

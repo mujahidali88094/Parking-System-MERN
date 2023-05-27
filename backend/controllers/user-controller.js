@@ -44,6 +44,7 @@ const login = async (req, res) => {
     if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
       payload = {
         email: process.env.ADMIN_EMAIL,
+        name: 'Admin',
         role: 'admin'
       };
     } else {
@@ -70,7 +71,7 @@ const login = async (req, res) => {
         if (err) {
           throw err;
         }
-        res.json({ message: 'Login successful', token });
+        res.json({ message: 'Login successful', token, user: payload });
       }
     );
 

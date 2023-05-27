@@ -14,7 +14,7 @@ router.post('/parking-areas', verifyLoggedIn, verifyIsAdmin, createParkingArea);
 router.put('/parking-areas/:id', verifyLoggedIn, verifyIsAdmin, updateParkingArea);
 router.delete('/parking-areas/:id', verifyLoggedIn, verifyIsAdmin, deleteParkingArea);
 
-router.get('/bookings', verifyLoggedIn, verifyIsAdmin, getAllBookings);
+router.get('/bookings', verifyLoggedIn, getAllBookings);
 router.get('/bookings/:parkingAreaId/:startTime/:endTime', verifyLoggedIn, getBookings);
 router.post('/bookings', verifyLoggedIn, verifyIsUser, createBooking);
 

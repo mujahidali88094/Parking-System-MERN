@@ -3,7 +3,15 @@ const Booking = require('../models/booking-model');
 const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find();
-    res.json(bookings);
+    // Convert the date fields in the records
+    const convertedRecords = bookings.map((record) => {
+      return {
+        ...record.toObject(),
+        startTime: record.startTime.toLocaleString(),
+        endTime: record.endTime.toLocaleString(),
+      };
+    });
+    res.json(convertedRecords);
   } catch(error) {
     res.status(500).json({ error: error.message });
   }
@@ -14,10 +22,35 @@ const getBookings = async (req, res) => {
     return res.status(400).json({ message: 'Missing required fields: parkingAreaId, startTime, endTime' });
   }
   const { parkingAreaId, startTime, endTime } = req.params;
-  console.log(parkingAreaId, startTime, endTime);
+  // Query to check for conflicts
+  const query = {
+    parkingAreaId,
+    $or: [
+      {
+        startTime: { $lt: startTime },
+        endTime: { $gt: startTime },
+      },
+      {
+        startTime: { $lt: endTime },
+        endTime: { $gt: endTime },
+      },
+      {
+        startTime: { $gte: startTime },
+        endTime: { $lte: endTime },
+      },
+    ],
+  };
   try {
-    const bookings = await Booking.find({ parkingAreaId, startTime: { $lte: endTime }, endTime: { $gte: startTime } });
-    res.json(bookings);
+    const bookings = await Booking.find(query);
+    // Convert the date fields in the records
+    const convertedRecords = bookings.map((record) => {
+      return {
+        ...record.toObject(),
+        startTime: record.startTime.toLocaleString(),
+        endTime: record.endTime.toLocaleString(),
+      };
+    });
+    res.json(convertedRecords);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -33,7 +66,26 @@ const createBooking = async (req, res) => {
   try {
     //check if slot is available
     const { parkingAreaId, slot, startTime, endTime } = req.body;
-    const bookings = await Booking.find({ parkingAreaId, slot, startTime: { $lte: endTime }, endTime: { $gte: startTime } });
+    // Query to check for conflicts
+    const query = {
+      parkingAreaId,
+      slot,
+      $or: [
+        {
+          startTime: { $lt: startTime },
+          endTime: { $gt: startTime },
+        },
+        {
+          startTime: { $lt: endTime },
+          endTime: { $gt: endTime },
+        },
+        {
+          startTime: { $gte: startTime },
+          endTime: { $lte: endTime },
+        },
+      ],
+    };
+    const bookings = await Booking.find(query);
     if (bookings.length > 0) {
       return res.status(400).json({ error: 'Slot is not available' });
     }

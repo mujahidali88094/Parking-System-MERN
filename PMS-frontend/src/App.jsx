@@ -4,11 +4,12 @@ import { hideNotification } from './redux/notificationSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Login, ParkingAreas } from "./pages";
+import { Login, ParkingAreas, PickSlot } from "./pages";
 
 const router = createBrowserRouter([
   { name: "Login", path: "/login", element: <Login /> },
   { name: "ParkingAreas", path: "/parkingAreas", element: <ParkingAreas /> },
+  { name: "PickSlot", path: "/pickSlot", element: <PickSlot /> },
 ]);
 
 function App() {

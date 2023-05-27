@@ -1,16 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = { };
+const initialState = {};
 
 const bookingSlice = createSlice({
   name: 'booking',
   initialState,
   reducers: {
     setBookingState: (state, action) => {
-      state = action.payload;
+      return { ...state, ...action.payload };
     },
-    unsetBookingState: (state) => {
-      state.user = {};
+    unsetBookingState: () => {
+      return {};
     }
   },
 });

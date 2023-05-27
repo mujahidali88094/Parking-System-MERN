@@ -42,3 +42,10 @@ export const getAllParkingAreasApi = async () => {
         url: "/parking-areas"
     })
 }
+
+export const getBookingsApi = async (parkingAreaId, startTime, endTime) => {
+    return await request({
+        method: "GET",
+        url: `/bookings/${parkingAreaId}/${startTime}/${endTime}`,
+    })
+}

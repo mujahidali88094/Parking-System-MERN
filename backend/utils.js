@@ -51,5 +51,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
+const mongoDateToLocalDate = (mongoDate) => {
+  const date = new Date(mongoDate);
+  const localDate = date.toLocaleString();
+  return localDate;
+};
 
-module.exports = { verifyLoggedIn, verifyIsAdmin, verifyIsUser, calculateDistance };
+module.exports = { verifyLoggedIn, verifyIsAdmin, verifyIsUser, calculateDistance, mongoDateToLocalDate };

@@ -31,7 +31,7 @@ export default function ParkingAreas() {
         {parkingAreas.map((parkingArea) => {
           return (
             <Grid item key={parkingArea._id}>
-              <Card onClick={() => { handleCardClick(parkingArea); }}>
+              <Card onClick={() => { handleCardClick(parkingArea); }} style={{cursor: 'pointer'}}>
               <CardContent style={{padding:20}}>
                 <Typography variant="h5" component="div" style={{marginBottom: '20px'}}>
                   {parkingArea.name}

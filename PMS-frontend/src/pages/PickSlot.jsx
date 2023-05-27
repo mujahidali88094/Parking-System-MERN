@@ -103,8 +103,8 @@ const Slots = () => {
   }, [dispatch, parkingArea, startTime, endTime]);
 
   const handleSlotClick = (slotNumber) => {
-    dispatch(setBookingState({ slotNumber }));
-    navigate("/book");
+    dispatch(setBookingState({ slot: slotNumber }));
+    navigate("/bookSlot");
   }
 
   return (
@@ -113,8 +113,9 @@ const Slots = () => {
       <Grid container spacing={4}>
         {slots.map((slot) => (
           <Grid item key={slot.slotNumber}>
-            <Card style={{ color: "white", backgroundColor: slot.booked ? "red" : "green", cursor: "pointer" }}
-              onClick={() => handleSlotClick(slot.slotNumber)} 
+            <Card
+              style={{ color: "white", backgroundColor: slot.booked ? "red" : "green", cursor: slot.booked ? "default" : "pointer" }}
+              onClick={() => !slot.booked && handleSlotClick(slot.slotNumber)} 
             >
               <CardContent style={{ padding: 20 }}>
                 <Typography variant="h5" component="div">

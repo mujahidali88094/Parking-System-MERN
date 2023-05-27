@@ -57,11 +57,12 @@ const getBookings = async (req, res) => {
 };
 
 const createBooking = async (req, res) => {
-  if (!req.body.parkingAreaId || !req.body.slot  || !req.body.startTime || !req.body.endTime || !req.body.status) {
-    return res.status(400).json({ message: 'Missing required fields: parkingAreaId, slot, startTime, endTime, status' });
+  if (!req.body.parkingAreaId || !req.body.slot  || !req.body.startTime || !req.body.endTime) {
+    return res.status(400).json({ message: 'Missing required fields: parkingAreaId, slot, startTime, endTime' });
   }
 
   req.body.userId = req.user._id;
+  req.body.status = 'booked';
 
   try {
     //check if slot is available

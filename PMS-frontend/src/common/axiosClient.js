@@ -5,7 +5,7 @@ import { BACKEND_URL } from "./constants";
 const request = async (config, jwt) => {
     if(jwt === undefined)
         jwt = retrieveCache('jwt');
-    // try{
+    try{
         const res = await axios.request({
             baseURL: BACKEND_URL,
             headers:{
@@ -13,19 +13,11 @@ const request = async (config, jwt) => {
             },
             ...config
         })
-    return res;
-    //     return {
-    //         errorOccurred: false,
-    //         data: res.data
-    //     }
-    // }
-    // catch(err){
-    //     return {
-    //         errorOccurred: true,
-    //         data: err.response ? err.response.data.message : err.message
-    //     }
-    // }
-    
+        return res.data;
+    }
+    catch(error){
+        throw error.response ? error.response.data.error : error.message;
+    }
 }
 
 

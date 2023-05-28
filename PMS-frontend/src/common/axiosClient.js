@@ -57,3 +57,26 @@ export const bookSlotApi = async (params) => {
         data: params
     });
 }
+
+export const createParkingAreaApi = async (params) => {
+    return await request({
+        method: "POST",
+        url: "/parking-areas",
+        data: params
+    });
+}
+
+export const updateParkingAreaApi = async (params) => {
+    return await request({
+        method: "PUT",
+        url: "/parking-areas/"+params._id,
+        data: params
+    });
+}
+
+export const deleteParkingAreaApi = async (id) => {
+    return await request({
+        method: "DELETE",
+        url: "/parking-areas/"+id,
+    });
+}

@@ -11,8 +11,8 @@ const getAllParkingAreas = async (req, res) => {
 
 const createParkingArea = async (req, res) => {
   try {
-    if (!req.body.name || !req.body.address || !req.body.lat || !req.body.lng || !req.body.capacity) {
-      return res.status(400).json({ message: 'Missing required fields: name, address, lat, lng, capacity' });
+    if (!req.body.name || !req.body.address || !req.body.lat || !req.body.lng || !req.body.capacity || !req.body.pricePerHour) {
+      return res.status(400).json({ message: 'Missing required fields: name, address, lat, lng, capacity, pricePerHour' });
     }
     const parkingArea = new ParkingArea(req.body);
     await parkingArea.save();

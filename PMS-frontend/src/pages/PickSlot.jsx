@@ -46,6 +46,7 @@ export default function PickSlot() {
             <Grid item>
               <h3>{booking.parkingArea.name}</h3>
               <h5>Capacity: {booking.parkingArea.capacity}</h5>
+              <h5>Price per Hour: {booking.parkingArea.pricePerHour}</h5>
               <h5>Address: {booking.parkingArea.address}</h5>
             </Grid>
             <Grid item>

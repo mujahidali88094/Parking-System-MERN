@@ -8,7 +8,7 @@ const parkingAreaSchema = new Schema({
   lat: Number,
   lng: Number,
   capacity: Number,
-
+  pricePerHour: Number,
 });
 
 const ParkingArea = mongoose.model('ParkingArea', parkingAreaSchema);

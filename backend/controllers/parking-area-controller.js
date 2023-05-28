@@ -1,8 +1,18 @@
 const ParkingArea = require('../models/parking-area-model');
+const { calculateDistance } = require('../utils');
 
 const getAllParkingAreas = async (req, res) => {
   try {
-    const parkingAreas = await ParkingArea.find();
+    let parkingAreas = await ParkingArea.find();
+    //filter nearby places if radius, lat and lng are provided
+    const { radius, lat, lng } = req.query;
+    if (radius && lat && lng) {
+      const filteredParkingAreas = parkingAreas.filter((parkingArea) => {
+        const distance = calculateDistance(lat, lng, parkingArea.lat, parkingArea.lng);
+        return distance <= radius;
+      });
+      parkingAreas = filteredParkingAreas;
+    }
     res.json(parkingAreas);
   } catch(error) {
     res.status(500).json({ error: error.message });

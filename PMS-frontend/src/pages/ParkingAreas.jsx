@@ -1,13 +1,14 @@
 import { Grid, Card, CardContent, Typography, Button, Stack } from "@mui/material";
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllParkingAreasApi } from "../common/axiosClient";
+import { getAllParkingAreasApi, getNearbyParkingAreasApi } from "../common/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
 import { setBookingState } from "../redux/bookingSlice";
 import { displayNotification } from "../redux/notificationSlice";
 import AddParkingAreaDialog from "../components/AddParkingAreaDialog";
 import UpdateParkingAreaDialog from "../components/UpdateParkingAreaDialog";
 import DeleteParkingAreaDialog from "../components/DeleteParkingAreaDialog";
+import { getLocation } from "../common/helpers";
 
 export default function ParkingAreas() {
 
@@ -23,13 +24,24 @@ export default function ParkingAreas() {
   const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-  const fetchParkingAreas = useCallback(() => {
-    getAllParkingAreasApi().then((res) => {
-      setParkingAreas(res);
-    }).catch((err) => {
-      dispatch(displayNotification({ message: String(err), type: "error" }));
-    });
-  }, [dispatch]);
+  const [nearby, setNearby] = React.useState(false);
+
+  const fetchParkingAreas = useCallback(async () => {
+    try{
+      if (nearby) {
+        const location = await getLocation();
+        console.log(location);
+        let radius = 1;
+        const res = await getNearbyParkingAreasApi(radius, location.latitude, location.longitude);
+        setParkingAreas(res);
+      } else {
+        const res = await getAllParkingAreasApi();
+        setParkingAreas(res);
+      }
+    } catch (error) {
+      dispatch(displayNotification({ message: String(error), type: "error" }));
+    }
+  }, [dispatch, nearby]);
 
   React.useEffect(() => {
     fetchParkingAreas();
@@ -53,13 +65,16 @@ export default function ParkingAreas() {
   return (
     <div>
       <h2>Parking Areas</h2>
-      <div style={{ marginBlock: 10 }}>
+      <Stack my={1} spacing={2} direction={'row'} justifyContent={'center'}>
         {loginState.user?.role == "admin" && (
           <Button onClick={() => { setAddDialogOpen(true); }} variant="contained">
             Add New
           </Button>
         )}
-      </div>
+        <Button onClick={() => { setNearby(!nearby); }} variant="contained">
+          {nearby ? "Show All" : "Show Nearby"}
+        </Button>
+      </Stack>
       <Grid container spacing={4}>
         {parkingAreas.map((parkingArea) => {
           return (

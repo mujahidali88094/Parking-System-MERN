@@ -43,6 +43,13 @@ export const getAllParkingAreasApi = async () => {
     })
 }
 
+export const getNearbyParkingAreasApi = async (radius, lat, lng) => {
+    return await request({
+        method: "GET",
+        url: `/parking-areas?radius=${radius}&lat=${lat}&lng=${lng}`
+    });
+}
+
 export const getBookingsApi = async (parkingAreaId, startTime, endTime) => {
     return await request({
         method: "GET",

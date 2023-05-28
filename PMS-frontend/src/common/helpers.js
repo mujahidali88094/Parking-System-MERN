@@ -33,3 +33,28 @@ export const retrieveCache = (key) => {
 export const clearCache = (key) => {
     localStorage.removeItem(key);
 };
+
+export const generateGoogleMapsLink = (latitude, longitude) => {
+  const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
+  return link;
+};
+
+export const getLocation = () => {
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          resolve({ latitude, longitude });
+        },
+        (error) => {
+          reject(error);
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      reject(new Error('Geolocation is not supported by this browser.'));
+    }
+  });
+};
+

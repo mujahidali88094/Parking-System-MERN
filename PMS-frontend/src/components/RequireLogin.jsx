@@ -7,8 +7,11 @@ export default function RequireLogin({ children, role }) {
   return loggedIn
     ? (role === undefined || role === user.role)
       ? children
-      : <div>You need to be ${role} to perform this action!</div>
-    : <div>Please Log In First</div>;
+      : <div>You need to be a/an {role} to perform this action!</div>
+    : (<div>
+      <p>Please Log In First</p>
+      <button onClick={() => { location.href = '/login'; }}>Login Page</button>
+    </div>);
 }
 
 RequireLogin.propTypes = {

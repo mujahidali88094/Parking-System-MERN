@@ -5,6 +5,7 @@ import { cacheWithExpiry } from "../common/helpers";
 import { useDispatch } from 'react-redux';
 import { displayNotification } from "../redux/notificationSlice";
 import { useNavigate } from "react-router-dom";
+import { login } from "../redux/loginSlice";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ export default function Login() {
       try {
         const response = await loginApi(values);
         dispatch(displayNotification({ message: "Login successful", type: "success" }));
+        dispatch(login(response.user));
         cacheWithExpiry("jwt", response.token, 1000 * 60 * 60 * 1);
         navigate("/parkingAreas");
       } catch (err) {

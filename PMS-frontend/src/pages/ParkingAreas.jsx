@@ -1,5 +1,5 @@
 import { Grid, Card, CardContent, Typography, Button, Stack } from "@mui/material";
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllParkingAreasApi } from "../common/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +14,7 @@ export default function ParkingAreas() {
   const [parkingAreas, setParkingAreas] = React.useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const loginState = useSelector((state) => state.login);
 
   const { parkingArea } = useSelector((state) => state.booking);
   const selectedParkingArea = parkingArea;
@@ -22,13 +23,17 @@ export default function ParkingAreas() {
   const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-  React.useEffect(() => {
+  const fetchParkingAreas = useCallback(() => {
     getAllParkingAreasApi().then((res) => {
       setParkingAreas(res);
     }).catch((err) => {
-      dispatch(displayNotification({message: String(err), type: "error"}));
+      dispatch(displayNotification({ message: String(err), type: "error" }));
     });
   }, [dispatch]);
+
+  React.useEffect(() => {
+    fetchParkingAreas();
+  }, [fetchParkingAreas]);
 
   const handleUpdateClick = (parkingArea) => {
     dispatch(setBookingState({ parkingArea: parkingArea }));
@@ -48,10 +53,12 @@ export default function ParkingAreas() {
   return (
     <div>
       <h2>Parking Areas</h2>
-      <div style={{marginBlock: 10}}>
-        <Button onClick={() => { setAddDialogOpen(true); }} variant="contained">
-          Add New
-        </Button>
+      <div style={{ marginBlock: 10 }}>
+        {loginState.user?.role == "admin" && (
+          <Button onClick={() => { setAddDialogOpen(true); }} variant="contained">
+            Add New
+          </Button>
+        )}
       </div>
       <Grid container spacing={4}>
         {parkingAreas.map((parkingArea) => {
@@ -77,10 +84,16 @@ export default function ParkingAreas() {
                 <Typography variant="body2" color="text.secondary">
                   Address: {parkingArea.address}
                 </Typography>
-                <Stack mt={2} spacing={2} direction={'row'}>
-                    <Button variant="contained" onClick={() => { handleUpdateClick(parkingArea); }}>Update</Button>
-                    <Button variant="contained" color="error" onClick={() => { handleDeleteClick(parkingArea); }}>Delete</Button>
-                    <Button variant="contained" onClick={() => { handleExploreClick(parkingArea); }}>Explore</Button>
+                <Stack mt={2} spacing={2} direction={'row'} justifyContent={'center'}>
+                    {loginState.user?.role == "admin" && (
+                      <>
+                        <Button variant="contained" onClick={() => { handleUpdateClick(parkingArea); }}>Update</Button>
+                        <Button variant="contained" color="error" onClick={() => { handleDeleteClick(parkingArea); }}>Delete</Button>
+                      </>
+                    )}
+                    {loginState.user?.role == "user" && (
+                      <Button variant="contained" onClick={() => { handleExploreClick(parkingArea); }}>Explore</Button>
+                    )}
                 </Stack>
               </CardContent>
             </Card>
@@ -88,9 +101,9 @@ export default function ParkingAreas() {
           )
         })}
       </Grid>
-      <AddParkingAreaDialog open={addDialogOpen} handleClose={() => { setAddDialogOpen(false); }} />
-      <UpdateParkingAreaDialog open={updateDialogOpen} handleClose={() => { setUpdateDialogOpen(false); }} parkingArea={selectedParkingArea} />
-      <DeleteParkingAreaDialog open={deleteDialogOpen} handleClose={() => { setDeleteDialogOpen(false); }} parkingArea={selectedParkingArea} />
+      <AddParkingAreaDialog open={addDialogOpen} handleClose={() => { setAddDialogOpen(false); fetchParkingAreas(); }} />
+      <UpdateParkingAreaDialog open={updateDialogOpen} handleClose={() => { setUpdateDialogOpen(false); fetchParkingAreas(); }} parkingArea={selectedParkingArea} />
+      <DeleteParkingAreaDialog open={deleteDialogOpen} handleClose={() => { setDeleteDialogOpen(false); fetchParkingAreas(); }} parkingArea={selectedParkingArea} />
     </div>
   );
 }

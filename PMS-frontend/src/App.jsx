@@ -1,25 +1,24 @@
 import './App.css'
-import { Snackbar, IconButton, Alert } from '@mui/material'
+import React from 'react'
+import {
+  Snackbar, IconButton, Alert, Typography, Button, Stack, ListItem, Box,
+  List, Drawer
+} from '@mui/material'
 import { hideNotification } from './redux/notificationSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import { Login, Signup, ParkingAreas, PickSlot, BookSlot } from "./pages";
-
-const router = createBrowserRouter([
-  { name: "Login", path: "/login", element: <Login /> },
-  { name: "Signup", path: "/signup", element: <Signup /> },
-  { name: "ParkingAreas", path: "/parkingAreas", element: <ParkingAreas /> },
-  { name: "PickSlot", path: "/pickSlot", element: <PickSlot /> },
-  { name: "BookSlot", path: "/bookSlot", element: <BookSlot /> },
-]);
+import { logout } from './redux/loginSlice';
+import pages from './common/pages';
+import { useNavigate, Routes, Route } from 'react-router-dom'
 
 function App() {
   const dispatch = useDispatch()
+  const loginState = useSelector((state) => state.login)
   const notification = useSelector((state) => state.notification)
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   return (
-    <>
+    <div>
       <Snackbar
         open={notification.open}
         autoHideDuration={notification.autoHideDuration}
@@ -36,11 +35,45 @@ function App() {
           }
         >{notification.message}</Alert>
       </Snackbar>
+  
+      <Drawer open={drawerOpen} onClose={() => { setDrawerOpen(false); }}>
+        <Box>
+          <Typography fontSize={20} fontWeight="bold" p={2}>Menu</Typography>
+          <List>
+            {
+              pages.map((page) => (
+                <ListItem key={page.path} style={{ cursor: 'pointer'}} >
+                  <Button
+                    onClick={()=>{setDrawerOpen(false); navigate(page.path);}}
+                  >{page.name}</Button>
+                </ListItem>
+              ))
+            }
+          </List>
+        </Box>
+      </Drawer>
 
-
-      <h1>Parking Management System</h1>  
-      <RouterProvider router={router} />
-    </>
+      <Stack direction={'row'} justifyContent={'space-between'}>
+        <Button onClick={()=>{setDrawerOpen(true)}} variant='contained' color='info' size='small'>Menu</Button>
+        <Typography fontSize={20} fontWeight="bold"
+        >Parking Management System</Typography>
+        {loginState.loggedIn ?
+          <Typography>{loginState.user.name} ({loginState.user.role})
+            <Button onClick={() => { dispatch(logout()); navigate('/login'); }}
+            >Logout</Button>
+          </Typography>
+          : <Typography>Not logged in</Typography>
+        }
+      </Stack>
+      <Routes>
+        {
+          pages.map((page) => (
+            <Route key={page.path} path={page.path} element={page.element} />
+          ))
+        }
+        <Route path='*' element={<Typography>404 Not Found</Typography>} />
+      </Routes>
+    </div>
   )
 }
 

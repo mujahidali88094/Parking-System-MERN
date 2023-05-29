@@ -42,11 +42,13 @@ function App() {
           <List>
             {
               pages.map((page) => (
-                <ListItem key={page.path} style={{ cursor: 'pointer'}} >
-                  <Button
-                    onClick={()=>{setDrawerOpen(false); navigate(page.path);}}
-                  >{page.name}</Button>
-                </ListItem>
+                page.hiddenTo.includes(loginState.user.role || 'guest')
+                  ? null
+                  : (<ListItem key={page.path} style={{ cursor: 'pointer'}} >
+                    <Button
+                      onClick={()=>{setDrawerOpen(false); navigate(page.path);}}
+                    >{page.name}</Button>
+                  </ListItem>)
               ))
             }
           </List>

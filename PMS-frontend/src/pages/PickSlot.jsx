@@ -6,6 +6,7 @@ import { displayNotification } from "../redux/notificationSlice";
 import { setBookingState } from "../redux/bookingSlice";
 import { getBookingsApi } from "../common/axiosClient";
 import { useNavigate } from "react-router-dom";
+import { generateGoogleMapsLink } from "../common/helpers";
 
 export default function PickSlot() {
 
@@ -48,6 +49,7 @@ export default function PickSlot() {
               <h5>Capacity: {booking.parkingArea.capacity}</h5>
               <h5>Price per Hour: {booking.parkingArea.pricePerHour}</h5>
               <h5>Address: {booking.parkingArea.address}</h5>
+              <h5><a href={generateGoogleMapsLink(booking.parkingArea.lat, booking.parkingArea.lng)} target="_blank" rel="noopener noreferrer">Location</a></h5>
             </Grid>
             <Grid item>
               <h3>Select Time and Date</h3>

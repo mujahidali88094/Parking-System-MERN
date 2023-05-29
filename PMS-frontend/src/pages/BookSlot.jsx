@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { displayNotification } from "../redux/notificationSlice";
 import { bookSlotApi } from "../common/axiosClient";
 import { unsetBookingState } from "../redux/bookingSlice";
+import { generateGoogleMapsLink } from "../common/helpers";
 
 export default function BookSlot() {
   const { parkingArea, startTime, endTime, slot } = useSelector((state) => state.booking);
@@ -30,7 +31,11 @@ export default function BookSlot() {
               <TableRow>
                 <TableCell>Parking Area</TableCell>
                 <TableCell>{parkingArea.name}</TableCell>
-              </TableRow>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Location</TableCell>
+                  <TableCell><a href={generateGoogleMapsLink(parkingArea.lat, parkingArea.lng)} target="_blank" rel="noopener noreferrer">Location</a></TableCell>
+                </TableRow>
               <TableRow>
                 <TableCell>From</TableCell>
                 <TableCell>{startTime.toLocaleString()}</TableCell>

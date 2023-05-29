@@ -9,6 +9,7 @@ import AddParkingAreaDialog from "../components/AddParkingAreaDialog";
 import UpdateParkingAreaDialog from "../components/UpdateParkingAreaDialog";
 import DeleteParkingAreaDialog from "../components/DeleteParkingAreaDialog";
 import { getLocation } from "../common/helpers";
+import { generateGoogleMapsLink } from "../common/helpers";
 
 export default function ParkingAreas() {
 
@@ -91,10 +92,7 @@ export default function ParkingAreas() {
                   Price per Hour: {parkingArea.pricePerHour}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Latitude: {parkingArea.lat}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Longitude: {parkingArea.lng}
+                  <a href={generateGoogleMapsLink(parkingArea.lat, parkingArea.lng)} target="_blank" rel="noopener noreferrer">Location</a>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Address: {parkingArea.address}

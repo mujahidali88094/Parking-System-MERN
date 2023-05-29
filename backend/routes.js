@@ -3,7 +3,7 @@ const { verifyLoggedIn, verifyIsUser, verifyIsAdmin } = require('./utils');
 
 const { getAllUsers, signup, login } = require('./controllers/user-controller');
 const { getAllParkingAreas, createParkingArea, updateParkingArea, deleteParkingArea } = require('./controllers/parking-area-controller');
-const { getAllBookings, getBookings, createBooking } = require('./controllers/booking-controller');
+const { getAllBookings, getBookings, checkoutBooking, confirmBookingAfterPayment } = require('./controllers/booking-controller');
 
 router.get('/users', verifyLoggedIn, verifyIsAdmin, getAllUsers);
 router.post('/signup', signup);
@@ -16,6 +16,7 @@ router.delete('/parking-areas/:id', verifyLoggedIn, verifyIsAdmin, deleteParking
 
 router.get('/bookings', verifyLoggedIn, getAllBookings);
 router.get('/bookings/:parkingAreaId/:startTime/:endTime', verifyLoggedIn, getBookings);
-router.post('/bookings', verifyLoggedIn, verifyIsUser, createBooking);
+router.post('/bookings', verifyLoggedIn, verifyIsUser, checkoutBooking);
+router.get('/bookings/confirmPayment', confirmBookingAfterPayment);
 
 module.exports = router;

@@ -65,6 +65,13 @@ export const bookSlotApi = async (params) => {
     });
 }
 
+export const confirmSuccessfulPaymentApi = async (sessionId) => {
+    return await request({
+        method: "GET",
+        url: "/bookings/confirmPayment?sessionId=" + sessionId,
+    });
+}
+
 export const createParkingAreaApi = async (params) => {
     return await request({
         method: "POST",

@@ -4,22 +4,19 @@ import { displayNotification } from "../redux/notificationSlice";
 import { bookSlotApi } from "../common/axiosClient";
 import { unsetBookingState } from "../redux/bookingSlice";
 
-
-
 export default function BookSlot() {
   const { parkingArea, startTime, endTime, slot } = useSelector((state) => state.booking);
   const dispatch = useDispatch();
 
   const onBookSlotClick = async () => {
     try {
-      await bookSlotApi({ parkingAreaId: parkingArea._id, startTime, endTime, slot });
-      dispatch(displayNotification({ message: "Slot Booked Successfully", type: "success" }));
+      const response = await bookSlotApi({ parkingAreaId: parkingArea._id, startTime, endTime, slot });
+      window.open(response.paymentSession.url, "_blank");
       dispatch(unsetBookingState());
     } catch (error) {
       dispatch(displayNotification({ message: error, type: "error" }));
     }
   }
-
 
   return (
     <div>

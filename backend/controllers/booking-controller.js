@@ -1,4 +1,7 @@
 const Booking = require('../models/booking-model');
+const ParkingArea = require('../models/parking-area-model');
+const { getHoursBetween } = require('../utils');
+const pendingBookings = require('../models/pending-bookings');
 
 const getAllBookings = async (req, res) => {
   try {
@@ -56,17 +59,14 @@ const getBookings = async (req, res) => {
   }
 };
 
-const createBooking = async (req, res) => {
-  if (!req.body.parkingAreaId || !req.body.slot  || !req.body.startTime || !req.body.endTime) {
+const checkoutBooking = async (req, res) => {
+  if (!req.body.parkingAreaId || !req.body.slot || !req.body.startTime || !req.body.endTime) {
     return res.status(400).json({ message: 'Missing required fields: parkingAreaId, slot, startTime, endTime' });
   }
-
-  req.body.userId = req.user._id;
-  req.body.status = 'booked';
-
+  const { parkingAreaId, slot, startTime, endTime } = req.body;
+  const userId = req.user._id;
   try {
     //check if slot is available
-    const { parkingAreaId, slot, startTime, endTime } = req.body;
     // Query to check for conflicts
     const query = {
       parkingAreaId,
@@ -90,11 +90,64 @@ const createBooking = async (req, res) => {
     if (bookings.length > 0) {
       return res.status(400).json({ error: 'Slot is not available' });
     }
-    //book slot
-    const booking = new Booking(req.body);
+    //calculate price
+    const parkingArea = await ParkingArea.findById(parkingAreaId);
+    const price = parkingArea.pricePerHour * getHoursBetween(startTime, endTime);
+
+    // generate payment link
+    const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'pkr',
+            product_data: {
+              name: 'Parking Fee',
+            },
+            unit_amount: price * 100, // in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.CLIENT_URL}/paymentSuccessful?sessionId={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/paymentFailed`,
+    });
+
+    // save booking details temporarily on server
+    const booking = new Booking({ parkingAreaId, slot, startTime, endTime, userId });
+    pendingBookings[session.id] = booking;
+
+    res.json({ message: 'Booking created successfully', paymentSession: { id: session.id, url: session.url } });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const confirmBookingAfterPayment = async (req, res) => {
+  const { sessionId } = req.query;
+  if (!sessionId) {
+    return res.status(400).json({ message: 'Missing required fields: sessionId' });
+  }
+  try {
+    //check if payment was successful
+    const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.payment_status !== 'paid') {
+      return res.status(400).json({ message: 'Payment was not successful' });
+    }
+    const booking = pendingBookings[sessionId];
+    if (!booking) {
+      return res.status(400).json({ message: 'Invalid sessionId' });
+    }
+    // save booking details in database
     await booking.save();
-    res.json({ message: 'Booking created successfully', booking });
-  } catch(error) {
+    // remove booking from pending bookings
+    delete pendingBookings[sessionId];
+    res.json({ message: 'Booking created successfully' });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
@@ -102,5 +155,6 @@ const createBooking = async (req, res) => {
 module.exports = {
   getAllBookings,
   getBookings,
-  createBooking
+  checkoutBooking,
+  confirmBookingAfterPayment,
 };

@@ -8,7 +8,6 @@ const bookingSchema = new Schema({
   userId: String,
   startTime: Date,
   endTime: Date,
-  status: String,
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

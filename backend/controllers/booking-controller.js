@@ -119,7 +119,7 @@ const checkoutBooking = async (req, res) => {
     const booking = new Booking({ parkingAreaId, slot, startTime, endTime, userId });
     pendingBookings[session.id] = booking;
 
-    res.json({ message: 'Booking created successfully', paymentSession: { id: session.id, url: session.url } });
+    res.json({ message: 'Please Pay to Complete Booking', paymentSession: { id: session.id, url: session.url } });
 
   } catch (error) {
     res.status(500).json({ error: error.message });

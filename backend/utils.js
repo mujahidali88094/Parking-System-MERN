@@ -60,7 +60,7 @@ const mongoDateToLocalDate = (mongoDate) => {
 const getHoursBetween = (startTime, endTime) => {
   const start = new Date(startTime);
   const end = new Date(endTime);
-  const hours = Math.abs(end - start) / 36e5;
+  const hours = Math.ceil(Math.abs(end - start) / 36e5);
   return hours;
 };
 

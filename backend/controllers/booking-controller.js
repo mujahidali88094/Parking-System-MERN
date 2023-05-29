@@ -1,19 +1,30 @@
 const Booking = require('../models/booking-model');
 const ParkingArea = require('../models/parking-area-model');
+const User = require('../models/user-model');
 const { getHoursBetween } = require('../utils');
 const pendingBookings = require('../models/pending-bookings');
 
 const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find();
-    // Convert the date fields in the records
-    const convertedRecords = bookings.map((record) => {
+    let bookings = await Booking.find();
+    //filter bookings that are not in the past
+    bookings = bookings.filter((booking) => booking.endTime > new Date());
+    // filter by user if user is accessing the endpoint
+    if(req.user.role === 'user') {
+      bookings = bookings.filter((booking) => booking.userId === req.user._id);
+    }
+    // Convert the records
+    const convertedRecords = await Promise.all(bookings.map(async (record) => {
+      let parkingArea = await ParkingArea.findById(record.parkingAreaId);
+      let user = await User.findById(record.userId).select('-password');
       return {
         ...record.toObject(),
         startTime: record.startTime.toLocaleString(),
         endTime: record.endTime.toLocaleString(),
+        parkingArea: parkingArea,
+        user: user,
       };
-    });
+    }));
     res.json(convertedRecords);
   } catch(error) {
     res.status(500).json({ error: error.message });

@@ -22,7 +22,7 @@ const getAllBookings = async (req, res) => {
 
 const getBookings = async (req, res) => {
   if (!req.params.parkingAreaId  || !req.params.startTime || !req.params.endTime) {
-    return res.status(400).json({ message: 'Missing required fields: parkingAreaId, startTime, endTime' });
+    return res.status(400).json({ error: 'Missing required fields: parkingAreaId, startTime, endTime' });
   }
   const { parkingAreaId, startTime, endTime } = req.params;
   // Query to check for conflicts
@@ -61,7 +61,7 @@ const getBookings = async (req, res) => {
 
 const checkoutBooking = async (req, res) => {
   if (!req.body.parkingAreaId || !req.body.slot || !req.body.startTime || !req.body.endTime) {
-    return res.status(400).json({ message: 'Missing required fields: parkingAreaId, slot, startTime, endTime' });
+    return res.status(400).json({ error: 'Missing required fields: parkingAreaId, slot, startTime, endTime' });
   }
   const { parkingAreaId, slot, startTime, endTime } = req.body;
   const userId = req.user._id;
@@ -129,18 +129,18 @@ const checkoutBooking = async (req, res) => {
 const confirmBookingAfterPayment = async (req, res) => {
   const { sessionId } = req.query;
   if (!sessionId) {
-    return res.status(400).json({ message: 'Missing required fields: sessionId' });
+    return res.status(400).json({ error: 'Missing required fields: sessionId' });
   }
   try {
     //check if payment was successful
     const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status !== 'paid') {
-      return res.status(400).json({ message: 'Payment was not successful' });
+      return res.status(400).json({ error: 'Payment was not successful' });
     }
     const booking = pendingBookings[sessionId];
     if (!booking) {
-      return res.status(400).json({ message: 'Invalid sessionId' });
+      return res.status(400).json({ error: 'Invalid sessionId' });
     }
     // save booking details in database
     await booking.save();

@@ -58,3 +58,14 @@ export const getLocation = () => {
   });
 };
 
+export const getCurrentDateTimeString = () => {
+  var today = new Date();
+  var date = today.getDate().toString().padStart(2, '0');
+  var month = (today.getMonth() + 1).toString().padStart(2, '0');
+  var year = today.getFullYear();
+  var hours = today.getHours().toString().padStart(2, '0');
+  var minutes = today.getMinutes().toString().padStart(2, '0');
+  
+  var dateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes;
+  return dateTime;
+};

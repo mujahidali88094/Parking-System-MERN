@@ -1,19 +1,19 @@
+import React from "react";
 import { Button, Paper, TableContainer, Table, TableBody, TableRow, TableCell } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { displayNotification } from "../redux/notificationSlice";
 import { bookSlotApi } from "../common/axiosClient";
-import { unsetBookingState } from "../redux/bookingSlice";
 import { generateGoogleMapsLink } from "../common/helpers";
 
 export default function BookSlot() {
   const { parkingArea, startTime, endTime, slot } = useSelector((state) => state.booking);
   const dispatch = useDispatch();
+  const [paymentUrl, setPaymentUrl] = React.useState("");
 
   const onBookSlotClick = async () => {
     try {
       const response = await bookSlotApi({ parkingAreaId: parkingArea._id, startTime, endTime, slot });
-      window.open(response.paymentSession.url, "_blank");
-      dispatch(unsetBookingState());
+      setPaymentUrl(response.paymentSession.url);
     } catch (error) {
       dispatch(displayNotification({ message: error, type: "error" }));
     }
@@ -55,6 +55,11 @@ export default function BookSlot() {
             <Button variant="contained" color="primary" style={{ margin: 10 }}
               onClick={onBookSlotClick}
             >Book Slot</Button>
+            {
+              paymentUrl && <Button variant="contained" color="primary" style={{ margin: 10 }}
+                onClick={() => window.open(paymentUrl, "_blank")}
+              >Pay Now To Complete Booking</Button>
+            }
             </div>
       }
     </div>

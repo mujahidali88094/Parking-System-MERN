@@ -6,7 +6,7 @@ import { displayNotification } from "../redux/notificationSlice";
 import { setBookingState } from "../redux/bookingSlice";
 import { getBookingsApi } from "../common/axiosClient";
 import { useNavigate } from "react-router-dom";
-import { generateGoogleMapsLink } from "../common/helpers";
+import { generateGoogleMapsLink, getCurrentDateTimeString } from "../common/helpers";
 
 export default function PickSlot() {
 
@@ -26,8 +26,8 @@ export default function PickSlot() {
         return;
       }
 
-      if (values.startTime > values.endTime) {
-        alert("Start time cannot be greater than end time");
+      if (values.startTime >= values.endTime) {
+        alert("Start time cannot be greater than or equal to the End time");
         setShowSlots(false);
         return;
       }
@@ -56,11 +56,13 @@ export default function PickSlot() {
               <form onSubmit={formik.handleSubmit}>
                 <TextField id="startTime" name="startTime" label="From" 
                   type="datetime-local" required style={{ marginBlock: 5 }} InputLabelProps={{ shrink: true, }}
+                  inputProps={{ min: getCurrentDateTimeString() }}
                   onChange={formik.handleChange} value={formik.values.startTime}
                 />
                 <br />
                 <TextField id="endTime" name="endTime" label="To"
-                  type="datetime-local" required style={{ marginBlock: 5 }}  InputLabelProps={{ shrink: true, }}
+                  type="datetime-local" required style={{ marginBlock: 5 }} InputLabelProps={{ shrink: true, }}
+                  inputProps={{ min: getCurrentDateTimeString() }}
                   onChange={formik.handleChange} value={formik.values.endTime}
                 />
                 <br />

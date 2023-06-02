@@ -1,4 +1,20 @@
 # Parking-System-MERN
+### Features
+#### Admin
+  - can add, update or remove a parking area
+  - can view all bookings
+#### User
+  - can view parking areas (can also view **NEARBY** parking areas)
+  - can view parking area location in Google Maps
+  - can select parking area and timeslot
+  - can view booked and available slots
+  - can book an available slot
+  - can **PAY using credit card**
+  - can view his/her upcoming bookings
+### Tech Stack
+  - ReactJS (+ material-ui, redux)
+  - NodeJS (+ expressJS)
+  - MongoDB (+ mongoose)
 ### Setup
 #### Backend
 1. Move into directory:
